@@ -8,15 +8,57 @@
 	<script>
 		$(function() 
 		{ 
-			$("#draggable").draggable();
+			$("#createTask").click(function()
+			{
+				var img = $('<img id="drag" class="task center" position="absolute" src="res/Icon.png"/>').draggable();
+				img.appendTo('#WorkFlowArea');
+			});
+			$(".task").draggable(
+			{
+				opacity: 0.35, 
+				scroll: true
+			});
+			$(".task").hover(function()
+			{
+				$(this).stop(true, false).animate({
+						opacity: .8
+					}, 200);
+			}, function()
+			{
+				$(this).stop(true, false).animate({
+						opacity: 1.0
+					}, 200);
+			});
+			
+
+			$(this).mousedown(function() 
+			{
+				//$("#drag").unbind(hover);
+				$(this).animate({
+					height: '-=10px',
+					width: '-=10px',
+					top: 	'+=5px',
+					left: 	'+=5px',
+				}, 100);
+			});
+			$(this).mouseup(function() 
+			{
+				//$("#drag").unbind(hover);
+				$(this).animate({
+					height: '+=10px',
+					width: '+=10px',
+					top: 	'-=5px',
+					left: 	'-=5px',
+				}, 100);
+			});
 		});
 	</script>
 </head>
 <body>
-	<div id="draggable" class="task">
-		<span>
-			<p><center>Drag me around</center></p>
-		</span>
-	</div>	
+	<div>
+		<button onclick="createTask()" id= "createTask" type="button" class="button">+</button>
+	</div>
+	<div id = "WorkFlowArea">
+	</div>
 </body>
 </html>
