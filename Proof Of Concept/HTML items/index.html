@@ -3,62 +3,73 @@
 <head>
 	<title></title>
 	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-  	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  	<script src="js/jquery-collision.min.js"></script>
+  	<!--\<script src="js/jquery-ui-draggable-collision.js"></script>-->
 	<script>
 		$(function() 
 		{ 
 			$("#createTask").click(function()
 			{
-				var img = $('<img id="drag" class="task center" position="absolute" src="res/Icon.png"/>').draggable();
+				var img = $('<img id="drag" class="task center" position="absolute" src="res/Icon.png"/>').draggable(
+					{
+						obstacle: ".task",
+						preventCollision: true,
+						opacity: 0.35, 
+						scroll: true
+					});
 				img.appendTo('#WorkFlowArea');
+
+			}), (function()
+			{
+				("#success").dialog("open");
 			});
+
 			$(".task").draggable(
 			{
+				obstacle: "#drag",
+				preventCollision: true,
 				opacity: 0.35, 
 				scroll: true
 			});
-			$(".task").hover(function()
-			{
-				$(this).stop(true, false).animate({
-						opacity: .8
-					}, 200);
-			}, function()
-			{
-				$(this).stop(true, false).animate({
-						opacity: 1.0
-					}, 200);
-			});
-			
 
-			$(this).mousedown(function() 
+			$(document).on("mouseenter", 'img', function()
 			{
-				//$("#drag").unbind(hover);
-				$(this).animate({
-					height: '-=10px',
-					width: '-=10px',
-					top: 	'+=5px',
-					left: 	'+=5px',
-				}, 100);
+				$(this).css("opacity", "0.8");
 			});
-			$(this).mouseup(function() 
+
+			$(document).on("mouseleave", 'img', function()
 			{
-				//$("#drag").unbind(hover);
-				$(this).animate({
-					height: '+=10px',
-					width: '+=10px',
-					top: 	'-=5px',
-					left: 	'-=5px',
-				}, 100);
+				$(this).css("opacity", "1.0");
+			});
+
+			$("#success").dialog(
+			{
+				autoOpen: false,
+				draggable: true,
+				closeOnEscape: true,
+				show: {
+					effect: "blinds",
+					duration: 1000
+				},
+				hide: {
+					effect: "fade",
+					duration: 1000
+				}
 			});
 		});
 	</script>
 </head>
 <body>
 	<div>
-		<button onclick="createTask()" id= "createTask" type="button" class="button">+</button>
+		<button id= "createTask" type="button" class="button">+</button>
 	</div>
-	<div id = "WorkFlowArea">
+	<div id = "WorkFlowArea" class="bordered">
+		<div id="success" title="basic dialog">
+			<p> Enter task information here </p>
+		</div>
 	</div>
 </body>
 </html>
