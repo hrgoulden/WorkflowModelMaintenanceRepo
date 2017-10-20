@@ -3,7 +3,7 @@
 <head>
 	<title></title>
 	<link rel="stylesheet" type="text/css" href="css/style.css">
-	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
 	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   	<script src="js/jquery-collision.min.js"></script>
@@ -11,26 +11,15 @@
 	<script>
 		$(function() 
 		{ 
+			var dialog, form, icon; 
 			$("#createTask").click(function()
 			{
-				var img = $('<img id="drag" class="task center" position="absolute" src="res/Icon.png"/>').draggable(
-					{
-						obstacle: ".task",
-						preventCollision: true,
-						opacity: 0.35, 
-						scroll: true
-					});
-				img.appendTo('#WorkFlowArea');
-
-			}), (function()
-			{
-				("#success").dialog("open");
+				$("#form")[0].reset();
+				$("#dialog").dialog("open");
 			});
 
 			$(".task").draggable(
 			{
-				obstacle: "#drag",
-				preventCollision: true,
 				opacity: 0.35, 
 				scroll: true
 			});
@@ -45,30 +34,96 @@
 				$(this).css("opacity", "1.0");
 			});
 
-			$("#success").dialog(
+			dialog = $("#dialog").dialog(
 			{
+				dialogClass: "no-close",
+				modal: true,
 				autoOpen: false,
 				draggable: true,
 				closeOnEscape: true,
-				show: {
-					effect: "blinds",
-					duration: 1000
-				},
-				hide: {
+				width: 500,
+				show: 
+				{
 					effect: "fade",
-					duration: 1000
+					duration: 200
+				},
+				hide: 
+				{
+					effect: "fade",
+					duration: 200
+				},
+				buttons: 
+				{
+					Cancel: function()
+					{
+						$(this).dialog("close");
+					},
+					"Create Task": function()
+					{
+						var img = $('<img id="drag" class="task center" position="absolute" src="res/Icon.png"/>').draggable(
+							{
+								obstacle: ".task",
+								preventCollision: true,
+								opacity: 0.35, 
+								scroll: true
+							});
+						icon = $("#taskType").val() + ".png";
+						img.attr("src", "res/" + icon);
+						img.appendTo('#WorkFlowArea');
+						$(this).dialog("close");
+						//$("p").html("Value:" + icon);
+					}
 				}
 			});
+
+			$("#taskType").selectmenu();
 		});
 	</script>
 </head>
 <body>
 	<div>
 		<button id= "createTask" type="button" class="button">+</button>
+		<p></p>
 	</div>
-	<div id = "WorkFlowArea" class="bordered">
-		<div id="success" title="basic dialog">
-			<p> Enter task information here </p>
+	<div id = "WorkFlowArea">
+		<div id="dialog" title="New Task">
+			<form id="form">
+				<fieldset>
+					<label for="taskType">Task Type</label>
+					<select name="taskType" id = "taskType" class="ui-corner-all">
+						<option disabled selected value="Icon">Task Type</option>
+						<option value="PPO_Selection">PPO Selection</option>
+						<option value="Hospital_Selection">Hospital Selection</option>
+						<option value="Medical_Bill_Review_Engine">Medical Bill Review Engine</option>
+						<option value="UR_Decision_Manager">UR Decision Manager</option>
+						<option value="Repricing_Bridges">Repricing Bridges</option>
+						<option value="Standard_State_Validations">Standard State Validations</option>
+						<option value="EOR_Generation">EOR Generation</option>
+						<!--<option value="State_Form_Generation">State Form Generation</option>-->
+						<option value="Posting">Posting</option>
+						<option value="Invoice_Generation">Invoice Generation</option>
+						<option value="Controlled_Export">Controlled Export</option>
+						<option value="Decision_Process">Decision Process</option>
+						<option value="Repair_Queue">Repair Queue</option>
+						<option value="Wait_Queue">Wait Queue</option>
+					</select>
+					<label for="name">Name</label>
+					<input type="text" name="name" id="name" class="text ui-widget-content ui-corner-all">
+					<div class="check">
+						<input class="checkBox" type="checkbox" name="DefaultFail" id = "DefaultFail">
+						<label class="checkBox" for="DefaultFail">Default Result to Fail if Nothing Found</label>
+					</div>
+					<div class="check">
+						<input class="checkBox" ="checkBox" type="checkbox" name="NoPrior" id="NoPrior">
+						<label class="checkBox" for="NoPrior">No Going Back to the Prior Task</label>
+					</div>
+					<div class="check">
+						<input class="checkBox" type="checkbox" name="NoRestart" id="NoRestart">
+						<label class="checkBox" for="NoPrior">No Restarting at the Default Intitial Task</label>
+					</div>
+					
+				</fieldset>
+			</form>
 		</div>
 	</div>
 </body>
