@@ -7,27 +7,26 @@ class Task{
 		var WFTaskRegistrySeq = 
 		var Name = name;
 		var Parameter1 = 
-		var RecordStatus = 'V';
+		var RecordStatus = 'V'; //default value
 		var NodeLeft = 
 		var NodeTop = 
 		var CreateUserID = 
 		var CreateDate = getDate();
 		var ModUserID = 
 		var ModDate = getDate();
-		var NoPrior = 'N';
-		var NoRestart = 'N';
+		var NoPrior = 'N'; //default value
+		var NoRestart = 'N'; //default value
 		var ParameterX = 
 		var DefaultPendGroup = 
 	}
 
-	setName()
+	set()
 	{
 
 	}
-
-	getName()
+	get()
 	{
-		return Name;
+		
 	}
 
 	dbInsert()
