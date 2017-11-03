@@ -6,22 +6,69 @@
 	<link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
 	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-  	<script src="js/jquery-collision.min.js"></script>
-  	<!--\<script src="js/jquery-ui-draggable-collision.js"></script>-->
+	<script type="text/javascript" src="js/jquery.connectingLine.js"></script>
+	<script type="text/javascript"  src="js/Task.js"></script>
 	<script>
 		$(function() 
 		{ 
-			var dialog, form, icon; 
+			var taskDialog, linkDialog, form, linkForm, linkStatus='none', icon, selectMode=false, node=0, taskID=0, linkID=0, mySVG = $('body').connect();; 
+
 			$("#createTask").click(function()
 			{
 				$("#form")[0].reset();
-				$("#dialog").dialog("open");
+				$("#taskDialog").dialog("open");
+			});
+
+			$("#createLink").click(function()
+			{
+				$("#linkForm")[0].reset();
+				selectMode=true;
+				$(this).toggleClass("pressed");
+				//$(".task").draggable('disable');
 			});
 
 			$(".task").draggable(
 			{
 				opacity: 0.35, 
-				scroll: true
+				scroll: true,
+				drag: function(event, ui)
+				{
+					mySVG.redrawLines();
+				},
+				stop: function(event, ui)
+				{
+					$(event.toElement).one('click', function(e)
+					{
+						e.stopImmediatePropagation();
+					});
+				}
+			});
+
+			$(document).on('click', '.task', function()
+			{
+				if (selectMode==true)
+				{
+					if (node==0)
+					{
+
+						$(this).addClass(linkID+"-a");
+						node++;
+					}
+					else if (node==1)
+					{
+						$(this).addClass(linkID+"-b");
+						$("#linkDialog").dialog("open");
+					}
+					else
+					{
+						node = 0;
+						selectMode=false;
+					}
+				}
+				else
+				{
+					alert("failed");
+				}
 			});
 
 			$(document).on("mouseenter", 'img', function()
@@ -34,7 +81,28 @@
 				$(this).css("opacity", "1.0");
 			});
 
-			dialog = $("#dialog").dialog(
+			function addLink()
+			{
+				linkStatus = $("#linkType").val();
+				linkDialog.dialog("close");
+				mySVG.drawLine(
+				{
+					left_node:'.' + linkID + '-a',
+					right_node:'.' + linkID + '-b',
+					style: 'solid',
+					status: linkStatus,
+					horizantal_gap:0,
+					error:true,
+					width:3
+				});
+				node=0;
+				linkID++;
+				selectMode=false;
+				var LinkButton =  $("#createLink");
+				LinkButton.toggleClass("pressed");
+			}
+
+			taskDialog = $("#taskDialog").dialog(
 			{
 				dialogClass: "no-close",
 				modal: true,
@@ -42,6 +110,13 @@
 				draggable: true,
 				closeOnEscape: true,
 				width: 500,
+				open: function()
+				{
+					$("#taskType").change(function()
+					{
+						alert("change");
+					});
+				},
 				show: 
 				{
 					effect: "fade",
@@ -60,33 +135,104 @@
 					},
 					"Create Task": function()
 					{
-						var img = $('<img id="drag" class="task center" position="absolute" src="res/Icon.png"/>').draggable(
+						var taskDiv = document.createElement('div');
+
+						taskDiv.id = taskID;
+						taskDiv.className = 'task center';
+						taskDiv.position  = "absolute";
+
+						var img = $('<img src="res/Icon.png"/>');
+						icon = $("#taskType").val() + ".png";
+						img.attr("src", "res/" + icon);
+						document.getElementsByTagName('body')[0].appendChild(taskDiv);
+						$('#'+taskID).append(img);
+						$(".task").draggable(
 							{
 								obstacle: ".task",
 								preventCollision: true,
 								opacity: 0.35, 
-								scroll: true
+								scroll: true,
+								drag: function(event, ui)
+								{
+									mySVG.redrawLines();
+								},
+								stop: function(event, ui)
+								{
+									$(event.toElement).one('click', function(e)
+									{
+										e.stopImmediatePropagation();
+									});
+								}
 							});
-						icon = $("#taskType").val() + ".png";
-						img.attr("src", "res/" + icon);
-						img.appendTo('#WorkFlowArea');
 						$(this).dialog("close");
-						//$("p").html("Value:" + icon);
+						taskID++;
 					}
 				}
 			});
 
+			linkDialog = $("#linkDialog").dialog(
+			{
+				dialogClass: "no-close",
+				modal: true,
+				autoOpen: false,
+				draggable: true,
+				closeOnEscape: true,
+				width: 500,
+				show: 
+				{
+					effect: "fade",
+					duration: 200
+				},
+				hide: 
+				{
+					effect: "fade",
+					duration: 200
+				},
+				buttons:
+				{
+					Cancel: function()
+					{
+						$(this).dialog("close");
+					},
+					"Create Link": addLink
+				}
+			});
+
+			$("#taskDialog").on("change", "#taskType", function()
+			{
+				alert("test");
+			});
+
 			$("#taskType").selectmenu();
+
+			$("#linkType").selectmenu();
+
+			mySVG.drawLine(
+			{
+				left_node:'#0-a',
+				right_node:'#0-b',
+				style: 'solid',
+				status:'rejected',
+				horizantal_gap:0,
+				error:true,
+				width:3
+			});
 		});
 	</script>
 </head>
 <body>
-	<div>
-		<button id= "createTask" type="button" class="button">+</button>
-		<p></p>
+	<div id="buttonArea">
+		<button id= "createTask" type="button" class="button">New Task</button>
+		<button id= "createLink" type="button" class="button">New Link</button>
+		<button id= "save" type="button" class="button saveButton">Save</button>
 	</div>
-	<div id = "WorkFlowArea">
-		<div id="dialog" title="New Task">
+	<div id = "WorkFlowArea"></div>
+		<!--<div class=" task node1" position="absolute">
+			<img position="absolute" src="res/Icon.png"/>
+		<div class="task node2 center" position="absolute">
+			<img position="absolute" src="res/Icon.png"/>
+		</div>-->
+		<div id="taskDialog" title="New Task">
 			<form id="form">
 				<fieldset>
 					<label for="taskType">Task Type</label>
@@ -108,13 +254,13 @@
 						<option value="Wait_Queue">Wait Queue</option>
 					</select>
 					<label for="name">Name</label>
-					<input type="text" name="name" id="name" class="text ui-widget-content ui-corner-all">
+					<input type="text" name="name" id="name" value="" class="text ui-widget-content ui-corner-all">
 					<div class="check">
 						<input class="checkBox" type="checkbox" name="DefaultFail" id = "DefaultFail">
 						<label class="checkBox" for="DefaultFail">Default Result to Fail if Nothing Found</label>
 					</div>
 					<div class="check">
-						<input class="checkBox" ="checkBox" type="checkbox" name="NoPrior" id="NoPrior">
+						<input class="checkBox" type="checkBox" type="checkbox" name="NoPrior" id="NoPrior">
 						<label class="checkBox" for="NoPrior">No Going Back to the Prior Task</label>
 					</div>
 					<div class="check">
@@ -125,6 +271,16 @@
 				</fieldset>
 			</form>
 		</div>
-	</div>
+		<div id="linkDialog" title="New Link">
+			<form id="linkForm">
+				<fieldset>
+					<label for="linkType">Link Condition</label>
+					<select name="linkType" id="linkType" class="ui-corner-all">
+						<option value="accepted">Success</option>
+						<option value="rejected">Failure</option>
+					</select>
+				</fieldset>
+			</form>
+		</div>
 </body>
 </html>
