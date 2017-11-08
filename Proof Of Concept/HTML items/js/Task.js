@@ -1,6 +1,14 @@
 
 class Task{
-	constructor(name, )
+
+
+	constructor()
+	{
+		var WFTask;
+		var EntityTypeCode
+	}
+
+	/*constructor(name, )
 	{
 		var WFTaskSeq //primary key
 		var LowSeq =  		
@@ -18,15 +26,16 @@ class Task{
 		var NoRestart = 'N'; //default value
 		var ParameterX = 
 		var DefaultPendGroup = 
+	}*/
+
+	setEntityTypeCode(EntityTypeCode)
+	{
+		this.EntityTypeCode = EntityTypeCode;
 	}
 
-	set()
+	getEntityTypeCode()
 	{
-
-	}
-	get()
-	{
-		
+		return this.EntityTypeCode;
 	}
 
 	dbInsert()
