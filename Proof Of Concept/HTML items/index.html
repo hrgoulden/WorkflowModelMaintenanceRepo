@@ -5,7 +5,9 @@
 	<link rel="stylesheet" type="text/css" href="css/style.css">
 	<link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
 	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<script src="js/jquery-1.12.4.js"></script>
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<script src="js/jquery-ui.js"></script>
 	<script type="text/javascript" src="js/jquery.connectingLine.js"></script>
 	<script type="text/javascript"  src="js/Task.js"></script>
 	<script>
@@ -22,7 +24,14 @@
 			$("#createLink").click(function()
 			{
 				$("#linkForm")[0].reset();
-				selectMode=true;
+				if (selectMode==true)
+				{
+					selectMode=false;
+				}
+				else if (selectMode==false)
+				{
+					selectMode=true;
+				}
 				$(this).toggleClass("pressed");
 				//$(".task").draggable('disable');
 			});
@@ -34,6 +43,7 @@
 				drag: function(event, ui)
 				{
 					mySVG.redrawLines();
+					//update position
 				},
 				stop: function(event, ui)
 				{
@@ -67,7 +77,7 @@
 				}
 				else
 				{
-					alert("failed");
+					alert("edit task");
 				}
 			});
 
@@ -142,7 +152,8 @@
 						taskDiv.position  = "absolute";
 
 						var img = $('<img src="res/Icon.png"/>');
-						icon = $("#taskType").val() + ".png";
+						var taskType = $("#taskType").val();
+						icon = taskType + ".png";
 						img.attr("src", "res/" + icon);
 						document.getElementsByTagName('body')[0].appendChild(taskDiv);
 						$('#'+taskID).append(img);
@@ -155,6 +166,7 @@
 								drag: function(event, ui)
 								{
 									mySVG.redrawLines();
+									//update position
 								},
 								stop: function(event, ui)
 								{
@@ -166,6 +178,10 @@
 							});
 						$(this).dialog("close");
 						taskID++;
+						//new Task 
+						var tasknew = new Task();
+						tasknew.setEntityTypeCode(taskType);
+						alert(type);
 					}
 				}
 			});
