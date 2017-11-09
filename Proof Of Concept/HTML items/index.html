@@ -250,7 +250,12 @@
 			});
 
 			$("#taskType").selectmenu();
-
+			
+			$("#taskType").on( "selectmenuchange", function( event, ui ) 
+			{
+				document.getElementById("name").value = taskType.options[taskType.selectedIndex].text
+			});
+			
 			$("#linkType").selectmenu();
 
 			mySVG.drawLine(
