@@ -13,7 +13,7 @@
 	<script>
 		$(function() 
 		{ 
-			var taskDialog, linkDialog, form, linkForm, linkStatus='none', icon, selectMode=false, node=0, taskID=0, linkID=0, mySVG = $('body').connect();; 
+			var taskDialog, linkDialog, form, linkForm, linkStatus='none', icon, selectMode=false, node=0, taskID=0, linkID=0, mySVG = $('body').connect(), pageWidth = $(document).width(), pageHeight = $(document).height(); 
 
 			$("#createTask").click(function()
 			{
@@ -101,7 +101,7 @@
 					right_node:'.' + linkID + '-b',
 					style: 'solid',
 					status: linkStatus,
-					horizantal_gap:0,
+					horizantal_gap:13,
 					error:true,
 					width:3
 				});
@@ -148,15 +148,21 @@
 						var taskDiv = document.createElement('div');
 
 						taskDiv.id = taskID;
-						taskDiv.className = 'task center';
-						taskDiv.position  = "absolute";
+						taskDiv.className = 'task';
+						var leftOffset = pageWidth / 2;
+						var topOffset = pageHeight / 2;
+						taskDiv.style  = "left: " + leftOffset + "px; top: " + topOffset + "px; position: absolute;" ;
 
 						var img = $('<img src="res/Icon.png"/>');
+						var taskName = $("#name").val();
 						var taskType = $("#taskType").val();
+						var leftPos = taskDiv.style.left;
+						var topPos = taskDiv.style.top;
 						icon = taskType + ".png";
 						img.attr("src", "res/" + icon);
 						document.getElementsByTagName('body')[0].appendChild(taskDiv);
 						$('#'+taskID).append(img);
+						$('#'+taskID).append(taskName);
 						$(".task").draggable(
 							{
 								obstacle: ".task",
@@ -177,13 +183,27 @@
 								}
 							});
 						$(this).dialog("close");
-						taskID++;
 						//new Task 
-						var tasknew = new Task();
-						tasknew.setEntityTypeCode(taskType);
-						alert(type);
+						var tasknew = new Task(taskID, taskName, taskType, leftPos, topPos);
+						var a = tasknew.getWFTaskSeq();
+						var b = tasknew.getTaskName();
+						var c = tasknew.getEntityTypeCode();
+						var d = tasknew.getTaskPositionX();
+						var e = tasknew.getTaskPositionY();
+						//alert(a + " " + b + " " +  c + " " +  d + " " +  e);
+						taskID++;
 					}
 				}
+			});
+
+			$("#taskDialog").keydown(function(event)
+			{
+				if(event.which == 13)
+				{
+					$(this).parent().find("button:eq(2)").click();
+					return false;
+				}
+
 			});
 
 			linkDialog = $("#linkDialog").dialog(
@@ -214,6 +234,16 @@
 				}
 			});
 
+			$("#linkDialog").keydown(function(event)
+			{
+				if(event.which == 13)
+				{
+					$(this).parent().find("button:eq(2)").click();
+					return false;
+				}
+
+			});
+
 			$("#taskDialog").on("change", "#taskType", function()
 			{
 				alert("test");
@@ -242,12 +272,12 @@
 		<button id= "createLink" type="button" class="button">New Link</button>
 		<button id= "save" type="button" class="button saveButton">Save</button>
 	</div>
-	<div id = "WorkFlowArea"></div>
-		<!--<div class=" task node1" position="absolute">
-			<img position="absolute" src="res/Icon.png"/>
-		<div class="task node2 center" position="absolute">
-			<img position="absolute" src="res/Icon.png"/>
-		</div>-->
+	<div id = "WorkFlowArea">
+	<!--<div class=" task node1" position="absolute">
+		<img position="absolute" src="res/Icon.png"/>
+	<div class="task node2 center" position="absolute">
+		<img position="absolute" src="res/Icon.png"/>
+	</div>-->
 		<div id="taskDialog" title="New Task">
 			<form id="form">
 				<fieldset>
@@ -270,7 +300,7 @@
 						<option value="Wait_Queue">Wait Queue</option>
 					</select>
 					<label for="name">Name</label>
-					<input type="text" name="name" id="name" value="" class="text ui-widget-content ui-corner-all">
+					<input type="text" name="name" id="name" value="Name" class="text ui-widget-content ui-corner-all">
 					<div class="check">
 						<input class="checkBox" type="checkbox" name="DefaultFail" id = "DefaultFail">
 						<label class="checkBox" for="DefaultFail">Default Result to Fail if Nothing Found</label>
@@ -298,5 +328,6 @@
 				</fieldset>
 			</form>
 		</div>
+	</div> 
 </body>
 </html>
