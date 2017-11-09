@@ -17,6 +17,12 @@
 			.attr('width', $(_parent).width())
 			.attr('height', $(_parent).height());
 		$('body').append(_canvas);
+		$(_canvas).attr('style', 'position:absolute; left:0px; top:50px;');
+		_canvas2 = $('<canvas/>')
+			.attr('width', $(_canvas).width())
+			.attr('height', $(_canvas).height());
+		$('body').append(_canvas2);
+		$(_canvas2).attr('style', 'position: absolute; left:0px; top:50px;');
 
 		this.drawLine = function(option) {
 			//It will push line to array.
@@ -47,13 +53,16 @@
 		//This Function is used to connect two different div with a dotted line.
 		this.connect = function(option) {
 			_ctx = _canvas[0].getContext('2d');
+			_ctx2 = _canvas2[0].getContext('2d');
 			_ctx.beginPath();
+			_ctx2.beginPath();
 			try {
 				var _color;
 				var _dash;
 				var _left = new Object(); //This will store _left elements offset  
 				var _right = new Object(); //This will store _right elements offset	
 				var _error = (option.error == 'show') || false;
+				var _switch;
 				/*
 				option = {
 					left_node - Left Element by ID - Mandatory
@@ -118,6 +127,11 @@
 							_tmp = _left_node
 							_left_node = _right_node
 							_right_node = _tmp;
+							_switch = true;
+						}
+						else
+						{
+							_switch = false;
 						}
 
 						//Get Left point and Right Point
@@ -133,12 +147,28 @@
 						var _gap = option.horizantal_gap || 0;
 
 
-						_ctx.moveTo(_left.x, _left.y);
-						if (_gap != 0) {
-							_ctx.lineTo(_left.x + _gap, _left.y);
-							_ctx.lineTo(_right.x - _gap, _right.y);
+						_ctx.moveTo(_left.x, _left.y-50);
+						if (_gap != 0 ) {
+							if (_switch == false)
+							{
+								_ctx.moveTo(_left.x, _left.y-50);
+								_ctx.lineTo(_right.x - _gap, _right.y-50);
+								_ctx2.moveTo(_right.x, _right.y-50);
+								_ctx2.lineTo(_right.x-13, _right.y-57.5);
+								_ctx2.lineTo(_right.x-13, _right.y-42.5);
+								_ctx.lineTo(_right.x-10, _right.y-50);
+							}
+							else
+							{
+								_ctx.moveTo(_left.x + 10, _left.y-50);
+								_ctx.lineTo(_left.x + _gap, _left.y-50);
+								_ctx2.moveTo(_left.x, _left.y-50);
+								_ctx2.lineTo(_left.x+13, _left.y-57.5);
+								_ctx2.lineTo(_left.x+13, _left.y-42.5);
+								_ctx.lineTo(_right.x, _right.y-50);
+							}
 						}
-						_ctx.lineTo(_right.x, _right.y);
+						
 
 						if (!_ctx.setLineDash) {
 							_ctx.setLineDash = function() {}
@@ -148,6 +178,14 @@
 						_ctx.lineWidth = option.width || 2;
 						_ctx.strokeStyle = _color;
 						_ctx.stroke();
+
+						//Draw Arrow
+						
+						_ctx2.fillStyle = _ctx.strokeStyle;
+						_ctx2.closePath();
+						_ctx2.fill();
+
+						//_ctx2.restore();
 					});
 
 					//option.resize = option.resize || false;
@@ -165,6 +203,7 @@
 		});
 		this.redrawLines = function() {
 			_ctx.clearRect(0, 0, $(_parent).width(), $(_parent).height());
+			_ctx2.clearRect(0, 0, $(_parent).width(), $(_parent).height());
 			_lines.forEach(function(entry) {
 				entry.resize = true;
 				_me.connect(entry);
