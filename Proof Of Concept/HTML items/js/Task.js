@@ -9,21 +9,22 @@ class Task{
 	*/
 
 
-	constructor(name, taskType, xPosition, yPosition)
+	constructor(PK, name, taskType, xPosition, yPosition)
 	{
-		var WFTask = name;
-		var EntityTypeCode = taskType;		
-		var xPos = xPosition;
-		var yPos = yPosition;
+		var WFTaskSeq, WFTask, EntityTypeCode, xPos, yPos;
+		this.setWFTaskSeq(PK);
+		this.setTaskName(name);
+		this.setEntityTypeCode(taskType);
+		this.setTaskPosition(xPosition, yPosition);
 	}
 	
-	setEntityTypeCode(EntityTypeCode)
+	setWFTaskSeq(PK)
 	{
-		this.EntityTypeCode = EntityTypeCode;
+		this.WFTaskSeq = PK;
 	}
-	getEntityTypeCode()
+	getWFTaskSeq()
 	{
-		return this.EntityTypeCode;
+		return this.WFTaskSeq;
 	}
 
 	//name = string var
@@ -35,6 +36,16 @@ class Task{
 	{
 		return this.WFTask;
 	}
+
+	setEntityTypeCode(EntityTypeCode)
+	{
+		this.EntityTypeCode = EntityTypeCode;
+	}
+	getEntityTypeCode()
+	{
+		return this.EntityTypeCode;
+	}
+
 
 	/*
 		Parameters
@@ -49,11 +60,11 @@ class Task{
 	}
 	getTaskPositionX()
 	{
-		return xPos;
+		return this.xPos;
 	}
 	getTaskPositionY()
 	{
-		return yPos;
+		return this.yPos;
 	}
 
 
