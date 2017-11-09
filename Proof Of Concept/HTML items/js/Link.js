@@ -35,6 +35,10 @@ class Link{
 		return LinkWhen;
 	}
 
+
+
+
+	/*
 	dbInsert()
 	{
 		//commit new link to db
@@ -56,5 +60,6 @@ class Link{
 	{
 		//remove link record from db
 	}
+	*/
 
 }
