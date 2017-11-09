@@ -60,7 +60,11 @@ div#users-contain table td, div#users-contain table th
 	position: absolute;
 	height: 100px;
 	width: 100px;
+	text-align: center;
+	color: #d0d0d0;
+	font-family: sans-serif;
 }
+
 
 .button
 {
@@ -128,8 +132,9 @@ div#users-contain table td, div#users-contain table th
 #WorkFlowArea
 {
 	height: 100%;
+	width: 100%;
 	position: absolute;
-	top: 70px;
+	top: 50px;
 }
 
 #buttonArea
