@@ -8,11 +8,7 @@ class Task{
 			var xPosition, yPosition 	//x and y offsets for task element
 	*/
 
-	constructor()
-	{
 
-	}
-	
 	constructor(name, taskType, xPosition, yPosition)
 	{
 		var WFTask = name;
