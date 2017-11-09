@@ -1,5 +1,10 @@
 
 class Link{
+
+	constructor()
+	{
+		
+	}
 	constructor(from, to, condition)
 	{
 		var FromTaskSeq = from; //primary key1

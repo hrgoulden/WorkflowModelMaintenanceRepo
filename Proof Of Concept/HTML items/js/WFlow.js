@@ -6,6 +6,12 @@ class WFlow{
 			desc 			//string var describing the workflow
 			
 	*/
+
+	constructor()
+	{
+
+	}
+	
 	constructor(desc )
 	{
 		var WFlowSeq = 	//primary key
