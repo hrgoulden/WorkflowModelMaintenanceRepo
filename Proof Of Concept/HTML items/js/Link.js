@@ -3,9 +3,9 @@ class Link{
 
 	constructor(fromTask, to, condition)
 	{
-		var FromTaskSeq = fromTask; //primary key1
-		var LinkWhen = condition;
-		var ToTaskSeq = to;	//primary key2
+		this.setFromTask(fromTask); //primary key1
+		this.setLinkWhen(condition);
+		this.setToTask(to);	//primary key2
 	}
 
 

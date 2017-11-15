@@ -18,7 +18,9 @@
 			
 			var taskDivList = [];
 			var taskList = [];
+			
 			var linkList = [];
+			var fromTask, toTask;
 
 			$("#createTask").click(function()
 			{
@@ -42,9 +44,7 @@
 			});
 
 			$("#save").click(function()
-			{
-				//alert(JSON.stringify(linkList)); --for link object testing
-				
+			{	
 				for(i = 0; i < taskDivList.length; i++){
 					var leftPos = taskDivList[i].style.left;
 					var topPos = taskDivList[i].style.top;
@@ -52,12 +52,8 @@
 					taskList[i].setTaskPosition(leftPos, topPos);
 				}
 				var datastring = JSON.stringify(taskList);
-				saveFile('workflowTasks.json', "data:application/json", new Blob([datastring],{type:""}));
-				
-				/* --for saving links, may be combined with task save above
-				datastring = JSON.stringify(linkList);
-				saveFile('workflowLinks.json', "data:application/json", new Blob([datastring],{type:""}));
-				*/
+				datastring = datastring + JSON.stringify(linkList);
+				saveFile('workflow.json', "data:application/json", new Blob([datastring],{type:""}));
 			});
 			
 			function saveFile (name, type, data) {
@@ -99,14 +95,15 @@
 				{
 					if (node==0)
 					{
-
 						$(this).addClass(linkID+"-a");
+						fromTask = this;
 						node++;
 					}
 					else if (node==1)
 					{
 						$(this).addClass(linkID+"-b");
 						$("#linkDialog").dialog("open");
+						toTask = this;
 					}
 					else
 					{
@@ -145,8 +142,8 @@
 					width:3
 				});
 				node=0;
-				var linkNew = new Link("test1", "test2", linkStatus);
-				linkList.push[linkNew];
+				var linkNew = new Link(fromTask.id, toTask.id, linkStatus);
+				linkList.push(linkNew);
 				linkID++;
 				selectMode=false;
 				var LinkButton =  $("#createLink");
