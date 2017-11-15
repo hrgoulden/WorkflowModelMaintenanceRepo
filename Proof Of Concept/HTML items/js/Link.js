@@ -1,9 +1,9 @@
 
 class Link{
 
-	constructor(from, to, condition)
+	constructor(fromTask, to, condition)
 	{
-		var FromTaskSeq = from; //primary key1
+		var FromTaskSeq = fromTask; //primary key1
 		var LinkWhen = condition;
 		var ToTaskSeq = to;	//primary key2
 	}

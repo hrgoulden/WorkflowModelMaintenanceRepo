@@ -10,10 +10,15 @@
 	<script src="js/jquery-ui.js"></script>
 	<script type="text/javascript" src="js/jquery.connectingLine.js"></script>
 	<script type="text/javascript"  src="js/Task.js"></script>
+	<script type="text/javascript"  src="js/Link.js"></script>
 	<script>
 		$(function() 
 		{ 
 			var taskDialog, linkDialog, form, linkForm, linkStatus='none', icon, selectMode=false, node=0, taskID=0, linkID=0, mySVG = $('body').connect(), pageWidth = $(document).width(), pageHeight = $(document).height(); 
+			
+			var taskDivList = [];
+			var taskList = [];
+			var linkList = [];
 
 			$("#createTask").click(function()
 			{
@@ -36,6 +41,40 @@
 				//$(".task").draggable('disable');
 			});
 
+			$("#save").click(function()
+			{
+				//alert(JSON.stringify(linkList)); --for link object testing
+				
+				for(i = 0; i < taskDivList.length; i++){
+					var leftPos = taskDivList[i].style.left;
+					var topPos = taskDivList[i].style.top;
+					
+					taskList[i].setTaskPosition(leftPos, topPos);
+				}
+				var datastring = JSON.stringify(taskList);
+				saveFile('workflowTasks.json', "data:application/json", new Blob([datastring],{type:""}));
+				
+				/* --for saving links, may be combined with task save above
+				datastring = JSON.stringify(linkList);
+				saveFile('workflowLinks.json', "data:application/json", new Blob([datastring],{type:""}));
+				*/
+			});
+			
+			function saveFile (name, type, data) {
+				if (data != null && navigator.msSaveBlob)
+				return navigator.msSaveBlob(new Blob([data], { type: type }), name);
+				var a = $("<a style='display: none;'/>");
+				var url = window.URL.createObjectURL(new Blob([data], {type: type}));
+				a.attr("href", url);
+				a.attr("download", name);
+				$("body").append(a);
+				a[0].click();
+				setTimeout(function(){
+					window.URL.revokeObjectURL(url);
+					a.remove();
+				}, 500);  
+			}
+			
 			$(".task").draggable(
 			{
 				opacity: 0.35, 
@@ -106,6 +145,8 @@
 					width:3
 				});
 				node=0;
+				var linkNew = new Link("test1", "test2", linkStatus);
+				linkList.push[linkNew];
 				linkID++;
 				selectMode=false;
 				var LinkButton =  $("#createLink");
@@ -183,15 +224,19 @@
 								}
 							});
 						$(this).dialog("close");
+						taskDivList.push(taskDiv);
 						//new Task 
 						var tasknew = new Task(taskID, taskName, taskType, leftPos, topPos);
+						/*
 						var a = tasknew.getWFTaskSeq();
 						var b = tasknew.getTaskName();
 						var c = tasknew.getEntityTypeCode();
 						var d = tasknew.getTaskPositionX();
 						var e = tasknew.getTaskPositionY();
 						//alert(a + " " + b + " " +  c + " " +  d + " " +  e);
+						*/
 						taskID++;
+						taskList.push(tasknew);
 					}
 				}
 			});
