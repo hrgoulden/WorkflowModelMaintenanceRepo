@@ -55,6 +55,12 @@
 				datastring = datastring + JSON.stringify(linkList);
 				saveFile('workflow.json', "data:application/json", new Blob([datastring],{type:""}));
 			});
+
+			$("#load").click(function()
+			{
+				document.getElementById("filePicker").click();
+				var selectedFile = document.getElementById('filePicker').file[0];
+			});
 			
 			function saveFile (name, type, data) {
 				if (data != null && navigator.msSaveBlob)
@@ -78,7 +84,7 @@
 				drag: function(event, ui)
 				{
 					mySVG.redrawLines();
-					//update position
+					//update position 
 				},
 				stop: function(event, ui)
 				{
@@ -318,6 +324,8 @@
 		<button id= "createTask" type="button" class="button">New Task</button>
 		<button id= "createLink" type="button" class="button">New Link</button>
 		<button id= "save" type="button" class="button saveButton">Save</button>
+		<button id = "load" type="button" class="button loadButton">Load</button>
+		<input type="file" id="filePicker" style="display:none">
 	</div>
 	<div id = "WorkFlowArea">
 	<!--<div class=" task node1" position="absolute">

@@ -154,8 +154,8 @@
 								_ctx.moveTo(_left.x, _left.y-50);
 								_ctx.lineTo(_right.x - _gap, _right.y-50);
 								_ctx2.moveTo(_right.x, _right.y-50);
-								_ctx2.lineTo(_right.x-13, _right.y-57.5);
-								_ctx2.lineTo(_right.x-13, _right.y-42.5);
+								_ctx2.lineTo(_right.x-13, _right.y-60);
+								_ctx2.lineTo(_right.x-13, _right.y-40);
 								_ctx.lineTo(_right.x-10, _right.y-50);
 							}
 							else
@@ -163,8 +163,8 @@
 								_ctx.moveTo(_left.x + 10, _left.y-50);
 								_ctx.lineTo(_left.x + _gap, _left.y-50);
 								_ctx2.moveTo(_left.x, _left.y-50);
-								_ctx2.lineTo(_left.x+13, _left.y-57.5);
-								_ctx2.lineTo(_left.x+13, _left.y-42.5);
+								_ctx2.lineTo(_left.x+13, _left.y-60);
+								_ctx2.lineTo(_left.x+13, _left.y-40);
 								_ctx.lineTo(_right.x, _right.y-50);
 							}
 						}
