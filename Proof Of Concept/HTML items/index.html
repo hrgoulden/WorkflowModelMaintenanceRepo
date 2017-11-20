@@ -21,6 +21,8 @@
 			
 			var linkList = [];
 			var fromTask, toTask;
+			
+			var loadArray = [];
 
 			$("#createTask").click(function()
 			{
@@ -59,8 +61,47 @@
 			$("#load").click(function()
 			{
 				document.getElementById("filePicker").click();
-				var selectedFile = document.getElementById('filePicker').file[0];
 			});
+			
+			$("#filePicker").change(function() {
+				loadFile(document.getElementById("filePicker").files[0]);
+			});
+			
+			function loadFile(file){
+				fr = new FileReader();
+				fr.onload = receivedText;
+				fr.readAsText(file);
+			}
+			
+			function receivedText(e) {
+				lines = e.target.result;
+				var loadedArrays = JSON.parse(lines); 
+				var inputTasks = loadedArrays[0];
+				var inputLinks = loadedArrays[1];
+				
+				var loadedTasks = [];
+				var loadedLinks = [];
+				
+				for(i = 0; i < inputTasks.length; i++){
+					var tasknew = new Task(inputTasks[i].WFTaskSeq,
+						inputTasks[i].WFTask,
+						inputTasks[i].EntityTypeCode,
+						inputTasks[i].xPos,
+						inputTasks[i].yPos);
+					loadedTasks.push(tasknew);
+				}
+				
+				for(i = 0; i < inputLinks; i++){
+					var linknew = new Link(inputLinks[i].FromTaskSeq,
+						inputLinks[i].LinkWhen,
+						inputLinks[i].ToTaskSeq);
+					loadedLinks.push(linknew);
+				}
+				
+				loadArray = [];
+				loadArray.push(loadedTasks);
+				loadArray.push(loadedLinks);
+			}
 			
 			function saveFile (name, type, data) {
 				if (data != null && navigator.msSaveBlob)
@@ -325,7 +366,7 @@
 		<button id= "createLink" type="button" class="button">New Link</button>
 		<button id= "save" type="button" class="button saveButton">Save</button>
 		<button id = "load" type="button" class="button loadButton">Load</button>
-		<input type="file" id="filePicker" style="display:none">
+		<input type="file" id="filePicker" style="display:none" accept=".json">
 	</div>
 	<div id = "WorkFlowArea">
 	<!--<div class=" task node1" position="absolute">
