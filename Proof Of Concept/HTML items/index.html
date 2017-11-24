@@ -53,8 +53,10 @@
 					
 					taskList[i].setTaskPosition(leftPos, topPos);
 				}
-				var datastring = JSON.stringify(taskList);
-				datastring = datastring + JSON.stringify(linkList);
+				var saveArray = [];
+				saveArray.push(taskList);
+				saveArray.push(linkList);
+				var datastring = JSON.stringify(saveArray);
 				saveFile('workflow.json', "data:application/json", new Blob([datastring],{type:""}));
 			});
 
