@@ -67,6 +67,8 @@
 			
 			$("#filePicker").change(function() {
 				loadFile(document.getElementById("filePicker").files[0]);
+				drawLoad(); 
+				console.log("here");
 			});
 			
 			function loadFile(file){
@@ -106,6 +108,23 @@
 				
 				//checks to see if loadArray has been pushed to properly, should say "2"
 				console.log(loadArray.length);
+			}
+
+			function drawLoad()
+			{
+				console.log("drawLoad");
+				console.log(loadArray.length);
+				for (var i = 0; i<loadArray.length; i++)
+				{
+					for(var j =0; i<loadArray.length; j++)
+					{
+						alert("i value: " + i + " j value: " + j);
+						var leftOff = loadArray[i][j].getTaskPositionX();
+						var topOff = loadArray[i][j].getTaskPositionY();
+						alert("left " + leftOff + " top " + topOff);  
+						createTaskFromLoad(loadArray[i][j]);
+					}
+				}
 			}
 			
 			function saveFile (name, type, data) {
@@ -235,60 +254,109 @@
 					},
 					"Create Task": function()
 					{
-						var taskDiv = document.createElement('div');
-
-						taskDiv.id = taskID;
-						taskDiv.className = 'task';
-						var leftOffset = pageWidth / 2;
-						var topOffset = pageHeight / 2;
-						taskDiv.style  = "left: " + leftOffset + "px; top: " + topOffset + "px; position: absolute;" ;
-
-						var img = $('<img src="res/Icon.png"/>');
-						var taskName = $("#name").val();
-						var taskType = $("#taskType").val();
-						var leftPos = taskDiv.style.left;
-						var topPos = taskDiv.style.top;
-						icon = taskType + ".png";
-						img.attr("src", "res/" + icon);
-						document.getElementsByTagName('body')[0].appendChild(taskDiv);
-						$('#'+taskID).append(img);
-						$('#'+taskID).append(taskName);
-						$(".task").draggable(
-							{
-								obstacle: ".task",
-								preventCollision: true,
-								opacity: 0.35, 
-								scroll: true,
-								drag: function(event, ui)
-								{
-									mySVG.redrawLines();
-									//update position
-								},
-								stop: function(event, ui)
-								{
-									$(event.toElement).one('click', function(e)
-									{
-										e.stopImmediatePropagation();
-									});
-								}
-							});
+						createTaskFromForm();
 						$(this).dialog("close");
-						taskDivList.push(taskDiv);
-						//new Task 
-						var tasknew = new Task(taskID, taskName, taskType, leftPos, topPos);
-						/*
-						var a = tasknew.getWFTaskSeq();
-						var b = tasknew.getTaskName();
-						var c = tasknew.getEntityTypeCode();
-						var d = tasknew.getTaskPositionX();
-						var e = tasknew.getTaskPositionY();
-						//alert(a + " " + b + " " +  c + " " +  d + " " +  e);
-						*/
-						taskID++;
-						taskList.push(tasknew);
 					}
 				}
 			});
+
+			function createTaskFromLoad(taskObject)
+			{
+				console.log("creatTaskfromLoad");
+				var taskDiv = document.createElement('div');
+
+				taskDiv.id = taskObject.getWFTaskSeq();
+				taskDiv.className = 'task';
+				var leftOffset = taskObject.getTaskPositionX();
+				var topOffset = taskObject.getTaskPositionY();
+				console.log("creatTaskfromLoad" + leftOffset);
+				taskDiv.style  = "left: " + leftOffset + "px; top: " + topOffset + "px; position: absolute;" ;
+
+				var img = $('<img src="res/Icon.png"/>');
+				var taskName = taskObject.getTaskName();
+				var taskType = taskObject.getEntityTypeCode(); 
+				var leftPos = taskDiv.style.left;
+				var topPos = taskDiv.style.top;
+				icon = taskType + ".png";
+				img.attr("src", "res/" + icon);
+				document.getElementsByTagName('body')[0].appendChild(taskDiv);
+				$('#'+taskID).append(img);
+				$('#'+taskID).append(taskName);
+				$(".task").draggable(
+					{
+						obstacle: ".task",
+						preventCollision: true,
+						opacity: 0.35, 
+						scroll: true,
+						drag: function(event, ui)
+						{
+							mySVG.redrawLines();
+							//update position
+						},
+						stop: function(event, ui)
+						{
+							$(event.toElement).one('click', function(e)
+							{
+								e.stopImmediatePropagation();
+							});
+						}
+					});
+			}
+
+
+			function createTaskFromForm()
+			{
+				var taskDiv = document.createElement('div');
+
+				taskDiv.id = taskID;
+				taskDiv.className = 'task';
+				var leftOffset = pageWidth / 2;
+				var topOffset = pageHeight / 2;
+				taskDiv.style  = "left: " + leftOffset + "px; top: " + topOffset + "px; position: absolute;" ;
+
+				var img = $('<img src="res/Icon.png"/>');
+				var taskName = $("#name").val();
+				var taskType = $("#taskType").val();
+				var leftPos = taskDiv.style.left;
+				var topPos = taskDiv.style.top;
+				icon = taskType + ".png";
+				img.attr("src", "res/" + icon);
+				document.getElementsByTagName('body')[0].appendChild(taskDiv);
+				$('#'+taskID).append(img);
+				$('#'+taskID).append(taskName);
+				$(".task").draggable(
+					{
+						obstacle: ".task",
+						preventCollision: true,
+						opacity: 0.35, 
+						scroll: true,
+						drag: function(event, ui)
+						{
+							mySVG.redrawLines();
+							//update position
+						},
+						stop: function(event, ui)
+						{
+							$(event.toElement).one('click', function(e)
+							{
+								e.stopImmediatePropagation();
+							});
+						}
+					});
+				taskDivList.push(taskDiv);
+				//new Task 
+				var tasknew = new Task(taskID, taskName, taskType, leftPos, topPos);
+				/*
+				var a = tasknew.getWFTaskSeq();
+				var b = tasknew.getTaskName();
+				var c = tasknew.getEntityTypeCode();
+				var d = tasknew.getTaskPositionX();
+				var e = tasknew.getTaskPositionY();
+				//alert(a + " " + b + " " +  c + " " +  d + " " +  e);
+				*/
+				taskID++;
+				taskList.push(tasknew);
+			}
 
 			$("#taskDialog").keydown(function(event)
 			{
