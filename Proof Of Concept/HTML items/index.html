@@ -67,7 +67,7 @@
 			
 			$("#filePicker").change(function() {
 				loadFile(document.getElementById("filePicker").files[0]);
-				drawLoad(); 
+				//drawLoad(); 
 				console.log("here");
 			});
 			
@@ -108,6 +108,7 @@
 				
 				//checks to see if loadArray has been pushed to properly, should say "2"
 				console.log(loadArray.length);
+				drawLoad(); 
 			}
 
 			function drawLoad()
