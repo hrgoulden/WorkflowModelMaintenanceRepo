@@ -14,7 +14,7 @@
 	<script>
 		$(function() 
 		{ 
-			var taskDialog, linkDialog, form, linkForm, linkStatus='none', icon, selectMode=false, node=0, taskID=0, linkID=0, mySVG = $('body').connect(), pageWidth = $(document).width(), pageHeight = $(document).height(); 
+			var taskDialog, linkDialog, form, linkForm, linkStatus='none', icon, selectMode=false, node=0, taskID=0, linkID=0, mySVG = $('body').connect(), pageWidth = $(document).width(), pageHeight = $(document).height(), fromTaskID, toTaskID; 
 			
 			var taskDivList = [];
 			var taskList = [];
@@ -118,9 +118,11 @@
 					{
 						if (i == 0)
 						{
-							var leftOff = loadArray[i][j].getTaskPositionX();
-							var topOff = loadArray[i][j].getTaskPositionY();  
 							createTaskFromLoad(loadArray[i][j]);
+						}
+						else if (i == 1)
+						{
+							createLinkFromLoad(loadArray[i][j]);
 						}
 					}
 				}
@@ -147,7 +149,7 @@
 				scroll: true,
 				drag: function(event, ui)
 				{
-					mySVG.redrawLines();
+					//mySVG.redrawLines();
 					//update position 
 				},
 				stop: function(event, ui)
@@ -165,13 +167,11 @@
 				{
 					if (node==0)
 					{
-						$(this).addClass(linkID+"-a");
 						fromTask = this;
 						node++;
 					}
 					else if (node==1)
 					{
-						$(this).addClass(linkID+"-b");
 						$("#linkDialog").dialog("open");
 						toTask = this;
 					}
@@ -203,8 +203,8 @@
 				linkDialog.dialog("close");
 				mySVG.drawLine(
 				{
-					left_node:'.' + linkID + '-a',
-					right_node:'.' + linkID + '-b',
+					left_node:'#' + fromTask.id,
+					right_node:'#' + toTask.id,
 					style: 'solid',
 					status: linkStatus,
 					horizantal_gap:13,
@@ -251,6 +251,23 @@
 					}
 				}
 			});
+
+			function createLinkFromLoad(linkObject)
+			{
+				var leftNode = linkObject.getFromTask();
+				alert(leftNode);
+				var rightNode = linkObject.getToTask();
+				mySVG.drawLine(
+				{
+					left_node: '#' + leftNode,
+					right_node:'#' + rightNode,
+					style: 'solid',
+					status: linkStatus,
+					horizantal_gap:13,
+					error:true,
+					width:3
+				});
+			}
 
 			function createTaskFromLoad(taskObject)
 			{
