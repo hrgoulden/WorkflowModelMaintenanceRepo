@@ -67,8 +67,7 @@
 			
 			$("#filePicker").change(function() {
 				loadFile(document.getElementById("filePicker").files[0]);
-				//drawLoad(); 
-				console.log("here");
+				//drawLoad();
 			});
 			
 			function loadFile(file){
@@ -107,23 +106,22 @@
 				loadArray.push(loadedLinks);
 				
 				//checks to see if loadArray has been pushed to properly, should say "2"
-				console.log(loadArray.length);
+				//console.log(loadArray.length);
 				drawLoad(); 
 			}
 
 			function drawLoad()
 			{
-				console.log("drawLoad");
-				console.log(loadArray.length);
 				for (var i = 0; i<loadArray.length; i++)
 				{
-					for(var j =0; i<loadArray.length; j++)
+					for(var j = 0; j<loadArray[i].length; j++)
 					{
-						alert("i value: " + i + " j value: " + j);
-						var leftOff = loadArray[i][j].getTaskPositionX();
-						var topOff = loadArray[i][j].getTaskPositionY();
-						alert("left " + leftOff + " top " + topOff);  
-						createTaskFromLoad(loadArray[i][j]);
+						if (i == 0)
+						{
+							var leftOff = loadArray[i][j].getTaskPositionX();
+							var topOff = loadArray[i][j].getTaskPositionY();  
+							createTaskFromLoad(loadArray[i][j]);
+						}
 					}
 				}
 			}
@@ -230,13 +228,6 @@
 				draggable: true,
 				closeOnEscape: true,
 				width: 500,
-				open: function()
-				{
-					$("#taskType").change(function()
-					{
-						alert("change");
-					});
-				},
 				show: 
 				{
 					effect: "fade",
@@ -263,15 +254,13 @@
 
 			function createTaskFromLoad(taskObject)
 			{
-				console.log("creatTaskfromLoad");
 				var taskDiv = document.createElement('div');
-
-				taskDiv.id = taskObject.getWFTaskSeq();
+				taskID = taskObject.getWFTaskSeq();
+				taskDiv.id = taskID;
 				taskDiv.className = 'task';
 				var leftOffset = taskObject.getTaskPositionX();
 				var topOffset = taskObject.getTaskPositionY();
-				console.log("creatTaskfromLoad" + leftOffset);
-				taskDiv.style  = "left: " + leftOffset + "px; top: " + topOffset + "px; position: absolute;" ;
+				taskDiv.style  = "left: " + leftOffset + "; top: " + topOffset + "; position: absolute;" ;
 
 				var img = $('<img src="res/Icon.png"/>');
 				var taskName = taskObject.getTaskName();
@@ -302,6 +291,7 @@
 							});
 						}
 					});
+				taskID++;
 			}
 
 
