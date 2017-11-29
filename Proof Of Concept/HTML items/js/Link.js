@@ -15,7 +15,7 @@ class Link{
 	}
 	getFromTask()
 	{
-		return FromTaskSeq;
+		return this.FromTaskSeq;
 	}
 	
 	setToTask(taskSeq)
@@ -24,7 +24,7 @@ class Link{
 	}
 	getToTask()
 	{
-		return ToTaskSeq;
+		return this.ToTaskSeq;
 	}
 	
 	setLinkWhen(condition)
@@ -33,7 +33,7 @@ class Link{
 	}
 	getLinkWhen()
 	{
-		return LinkWhen;
+		return this.LinkWhen;
 	}
 
 

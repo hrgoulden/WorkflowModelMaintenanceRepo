@@ -96,8 +96,8 @@
 				
 				for(i = 0; i < inputLinks.length; i++){
 					var linknew = new Link(inputLinks[i].FromTaskSeq,
-						inputLinks[i].LinkWhen,
-						inputLinks[i].ToTaskSeq);
+						inputLinks[i].ToTaskSeq,
+						inputLinks[i].LinkWhen);
 					loadedLinks.push(linknew);
 				}
 				
@@ -255,8 +255,8 @@
 			function createLinkFromLoad(linkObject)
 			{
 				var leftNode = linkObject.getFromTask();
-				alert(leftNode);
 				var rightNode = linkObject.getToTask();
+				var linkStatus = linkObject.getLinkWhen();
 				mySVG.drawLine(
 				{
 					left_node: '#' + leftNode,
