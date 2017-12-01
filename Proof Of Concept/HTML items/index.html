@@ -97,7 +97,6 @@
 
 			function loadFile(file){
 				clearPage();
-				taskDivList = [];
 				fr = new FileReader();
 				fr.onload = receivedText;
 				fr.readAsText(file);
@@ -107,11 +106,18 @@
 			{
 				taskID = 0;
 				$("div.task").remove();
+				taskDivList = [];
 				node = 0;
 				var LinkButton =  $("#createLink");
 				LinkButton.removeClass("pressed");
 				selectMode = false;
 				mySVG.redrawLines();
+				taskDivList = [];
+				taskList = [];
+				linkList = [];
+				fromTask = null;
+				toTask = null;
+				loadArray = [];
 			}
 			
 			function receivedText(e) 
