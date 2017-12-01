@@ -14,7 +14,7 @@
 	<script>
 		$(function() 
 		{ 
-			var taskDialog, linkDialog, form, linkForm, linkStatus='none', icon, selectMode=false, node=0, taskID=0, linkID=0, mySVG = $('body').connect(), pageWidth = $(document).width(), pageHeight = $(document).height(), fromTaskID, toTaskID; 
+			var taskDialog, linkDialog, form, linkForm, linkStatus='none', icon, selectMode=false, node=0, taskID=0, mySVG = $('body').connect(), pageWidth = $(document).width(), pageHeight = $(document).height(), fromTaskID, toTaskID; 
 			
 			var taskDivList = [];
 			var taskList = [];
@@ -26,6 +26,14 @@
 
 			$("#createTask").click(function()
 			{
+				$.get('taskArray.txt', function(txtFile)
+				{
+					var types = txtFile.split("\n");
+					console.log(types[1]);
+					var option = $('<option>PPO Selection</option>')
+					//console.log(document.getElementById('#taskType').name);
+					//document.getElementById('#taskType').appendChild(option);
+				});
 				$("#form")[0].reset();
 				$("#taskDialog").dialog("open");
 			});
@@ -45,9 +53,23 @@
 				//$(".task").draggable('disable');
 			});
 
+			$("#new").click(function()
+			{
+				if (confirm("Do you want to save your workflow?") == true)
+				{
+					$("#save").click();
+					clearPage();
+				}
+				else
+				{
+					clearPage();
+				}
+			});
+
 			$("#save").click(function()
 			{	
-				for(i = 0; i < taskDivList.length; i++){
+				for(var i = 0; i < taskDivList.length; i++)
+				{
 					var leftPos = taskDivList[i].style.left;
 					var topPos = taskDivList[i].style.top;
 					
@@ -62,21 +84,38 @@
 
 			$("#load").click(function()
 			{
+				document.getElementById("filePicker").value = null;
 				document.getElementById("filePicker").click();
 			});
 			
-			$("#filePicker").change(function() {
+
+			$("#filePicker").change(function() 
+			{
 				loadFile(document.getElementById("filePicker").files[0]);
-				//drawLoad();
 			});
 			
+
 			function loadFile(file){
+				clearPage();
+				taskDivList = [];
 				fr = new FileReader();
 				fr.onload = receivedText;
 				fr.readAsText(file);
 			}
+
+			function clearPage()
+			{
+				taskID = 0;
+				$("div.task").remove();
+				node = 0;
+				var LinkButton =  $("#createLink");
+				LinkButton.removeClass("pressed");
+				selectMode = false;
+				mySVG.redrawLines();
+			}
 			
-			function receivedText(e) {
+			function receivedText(e) 
+			{
 				lines = e.target.result;
 				var loadedArrays = JSON.parse(lines); 
 				var inputTasks = loadedArrays[0];
@@ -85,7 +124,7 @@
 				var loadedTasks = [];
 				var loadedLinks = [];
 				
-				for(i = 0; i < inputTasks.length; i++){
+				for(var i = 0; i < inputTasks.length; i++){
 					var tasknew = new Task(inputTasks[i].WFTaskSeq,
 						inputTasks[i].WFTask,
 						inputTasks[i].EntityTypeCode,
@@ -94,7 +133,7 @@
 					loadedTasks.push(tasknew);
 				}
 				
-				for(i = 0; i < inputLinks.length; i++){
+				for(var i = 0; i < inputLinks.length; i++){
 					var linknew = new Link(inputLinks[i].FromTaskSeq,
 						inputLinks[i].ToTaskSeq,
 						inputLinks[i].LinkWhen);
@@ -106,7 +145,6 @@
 				loadArray.push(loadedLinks);
 				
 				//checks to see if loadArray has been pushed to properly, should say "2"
-				//console.log(loadArray.length);
 				drawLoad(); 
 			}
 
@@ -214,7 +252,6 @@
 				node=0;
 				var linkNew = new Link(fromTask.id, toTask.id, linkStatus);
 				linkList.push(linkNew);
-				linkID++;
 				selectMode=false;
 				var LinkButton =  $("#createLink");
 				LinkButton.toggleClass("pressed");
@@ -267,6 +304,7 @@
 					error:true,
 					width:3
 				});
+				linkList.push(linkObject);
 			}
 
 			function createTaskFromLoad(taskObject)
@@ -308,6 +346,8 @@
 							});
 						}
 					});
+				taskDivList.push(taskDiv);
+				taskList.push(taskObject);
 				taskID++;
 			}
 
@@ -442,11 +482,16 @@
 	</script>
 </head>
 <body>
-	<div id="buttonArea">
-		<button id= "createTask" type="button" class="button">New Task</button>
-		<button id= "createLink" type="button" class="button">New Link</button>
-		<button id= "save" type="button" class="button saveButton">Save</button>
-		<button id = "load" type="button" class="button loadButton">Load</button>
+	<div id="buttonArea" class="allButtons">
+		<div class="topButtons">
+			<button id = "new" type="button" class = "button newButton bigButton">New Workflow</button>
+			<button id = "load" type="button" class="button loadButton bigButton">Load</button>
+			<button id= "save" type="button" class="button saveButton bigButton">Save</button>
+		</div>
+		<div class="bottomButtons">
+			<button id= "createTask" type="button" class="button smallButton">New Task</button>
+			<button id= "createLink" type="button" class="button smallButton">New Link</button>
+		</div>
 		<input type="file" id="filePicker" style="display:none" accept=".json">
 	</div>
 	<div id = "WorkFlowArea">
@@ -474,7 +519,7 @@
 						<option value="Controlled_Export">Controlled Export</option>
 						<option value="Decision_Process">Decision Process</option>
 						<option value="Repair_Queue">Repair Queue</option>
-						<option value="Wait_Queue">Wait Queue</option>
+						<option value="Wait_Queue">Wait Queue</option>-->
 					</select>
 					<label for="name">Name</label>
 					<input type="text" name="name" id="name" value="Name" class="text ui-widget-content ui-corner-all">
