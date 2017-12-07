@@ -26,6 +26,13 @@
 
 			$("#createTask").click(function()
 			{
+				if (selectMode == true)
+				{
+					selectMode = false;
+					node= 0;
+					var LinkButton =  $("#createLink");
+					LinkButton.removeClass("pressed");
+				}
 				$.get('taskArray.txt', function(txtFile)
 				{
 					var types = txtFile.split("\n");
@@ -110,14 +117,16 @@
 				node = 0;
 				var LinkButton =  $("#createLink");
 				LinkButton.removeClass("pressed");
-				selectMode = false;
 				mySVG.redrawLines();
+				mySVG.reset();
+				selectMode = false;
 				taskDivList = [];
 				taskList = [];
 				linkList = [];
 				fromTask = null;
 				toTask = null;
 				loadArray = [];
+				
 			}
 			
 			function receivedText(e) 
@@ -216,8 +225,17 @@
 					}
 					else if (node==1)
 					{
-						$("#linkDialog").dialog("open");
 						toTask = this;
+						if (fromTask.id == toTask.id)
+						{
+							alert("You can't link a task to itself.");
+							toTask = null;
+							node= 0;
+						}
+						else
+						{
+							$("#linkDialog").dialog("open");
+						}
 					}
 					else
 					{
@@ -336,7 +354,6 @@
 				$(".task").draggable(
 					{
 						obstacle: ".task",
-						preventCollision: true,
 						opacity: 0.35, 
 						scroll: true,
 						drag: function(event, ui)
@@ -381,7 +398,6 @@
 				$(".task").draggable(
 					{
 						obstacle: ".task",
-						preventCollision: true,
 						opacity: 0.35, 
 						scroll: true,
 						drag: function(event, ui)
@@ -444,6 +460,7 @@
 				{
 					Cancel: function()
 					{
+						node = 0;
 						$(this).dialog("close");
 					},
 					"Create Link": addLink

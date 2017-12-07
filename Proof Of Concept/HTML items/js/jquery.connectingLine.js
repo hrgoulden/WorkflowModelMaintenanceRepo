@@ -209,6 +209,12 @@
 				_me.connect(entry);
 			});
 		};
+
+		this.reset = function(option)
+		{
+			_lines = [];
+		};
+
 		return this;
 	};
 }(jQuery));
