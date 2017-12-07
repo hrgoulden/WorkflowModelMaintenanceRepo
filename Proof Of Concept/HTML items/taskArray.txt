@@ -3,7 +3,7 @@ Hospital Selection
 Medical Bill Review Engine
 UR Decision Manager
 Repricing Bridges
-Standard State Validation
+Standard State Validations
 EOR Generation
 Posting
 Invoice Generation

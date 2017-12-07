@@ -28,19 +28,22 @@
 			{
 				if (selectMode == true)
 				{
-					selectMode = false;
-					node= 0;
-					var LinkButton =  $("#createLink");
-					LinkButton.removeClass("pressed");
+					cancelLinkCreation();
 				}
-				$.get('taskArray.txt', function(txtFile)
+				if (taskID == 0)
 				{
-					var types = txtFile.split("\n");
-					console.log(types[1]);
-					var option = $('<option>PPO Selection</option>')
-					//console.log(document.getElementById('#taskType').name);
-					//document.getElementById('#taskType').appendChild(option);
-				});
+					$.get('taskArray.txt', function(txtFile)
+					{
+						var types = txtFile.split("\n");
+						taskSelect = document.getElementById('taskType');
+						for (var i=0; i < types.length; i++)
+						{
+							var value = types[i].replace(/ /g,"_");
+							taskSelect.options[taskSelect.options.length] = new Option(types[i], value);
+						}
+											
+					});
+				}
 				$("#form")[0].reset();
 				$("#taskDialog").dialog("open");
 			});
@@ -62,6 +65,10 @@
 
 			$("#new").click(function()
 			{
+				if (selectMode == true)
+				{
+					cancelLinkCreation();
+				}
 				if (confirm("Do you want to save your workflow?") == true)
 				{
 					$("#save").click();
@@ -75,6 +82,10 @@
 
 			$("#save").click(function()
 			{	
+				if (selectMode == true)
+				{
+					cancelLinkCreation();
+				}
 				for(var i = 0; i < taskDivList.length; i++)
 				{
 					var leftPos = taskDivList[i].style.left;
@@ -91,6 +102,10 @@
 
 			$("#load").click(function()
 			{
+				if (selectMode == true)
+				{
+					cancelLinkCreation();
+				}
 				document.getElementById("filePicker").value = null;
 				document.getElementById("filePicker").click();
 			});
@@ -109,17 +124,22 @@
 				fr.readAsText(file);
 			}
 
+			function cancelLinkCreation()
+			{
+				selectMode = false;
+				node= 0;
+				var LinkButton =  $("#createLink");
+				LinkButton.removeClass("pressed");
+			}
+
 			function clearPage()
 			{
 				taskID = 0;
 				$("div.task").remove();
 				taskDivList = [];
-				node = 0;
-				var LinkButton =  $("#createLink");
-				LinkButton.removeClass("pressed");
+				cancelLinkCreation();
 				mySVG.redrawLines();
 				mySVG.reset();
-				selectMode = false;
 				taskDivList = [];
 				taskList = [];
 				linkList = [];
@@ -239,8 +259,7 @@
 					}
 					else
 					{
-						node = 0;
-						selectMode=false;
+						cancelLinkCreation();
 					}
 				}
 				else
@@ -273,12 +292,9 @@
 					error:true,
 					width:3
 				});
-				node=0;
 				var linkNew = new Link(fromTask.id, toTask.id, linkStatus);
 				linkList.push(linkNew);
-				selectMode=false;
-				var LinkButton =  $("#createLink");
-				LinkButton.toggleClass("pressed");
+				cancelLinkCreation();
 			}
 
 			taskDialog = $("#taskDialog").dialog(
@@ -390,7 +406,7 @@
 				var taskType = $("#taskType").val();
 				var leftPos = taskDiv.style.left;
 				var topPos = taskDiv.style.top;
-				icon = taskType + ".png";
+				var icon = taskType + ".png";
 				img.attr("src", "res/" + icon);
 				document.getElementsByTagName('body')[0].appendChild(taskDiv);
 				$('#'+taskID).append(img);
@@ -529,14 +545,13 @@
 					<label for="taskType">Task Type</label>
 					<select name="taskType" id = "taskType" class="ui-corner-all">
 						<option disabled selected value="Icon">Task Type</option>
-						<option value="PPO_Selection">PPO Selection</option>
+						<!--<option value="PPO_Selection">PPO Selection</option>
 						<option value="Hospital_Selection">Hospital Selection</option>
 						<option value="Medical_Bill_Review_Engine">Medical Bill Review Engine</option>
 						<option value="UR_Decision_Manager">UR Decision Manager</option>
 						<option value="Repricing_Bridges">Repricing Bridges</option>
 						<option value="Standard_State_Validations">Standard State Validations</option>
 						<option value="EOR_Generation">EOR Generation</option>
-						<!--<option value="State_Form_Generation">State Form Generation</option>-->
 						<option value="Posting">Posting</option>
 						<option value="Invoice_Generation">Invoice Generation</option>
 						<option value="Controlled_Export">Controlled Export</option>
