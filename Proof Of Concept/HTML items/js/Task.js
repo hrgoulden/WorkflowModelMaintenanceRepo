@@ -12,7 +12,7 @@ class Task{
 	constructor(PK, name, taskType, xPosition, yPosition)
 	{
 		var WFTaskSeq, WFTask, EntityTypeCode, xPos, yPos;
-		this.setWFTaskSeq(PK);
+		this.setWFTaskSeq(PK); //primary key
 		this.setTaskName(name);
 		this.setEntityTypeCode(taskType);
 		this.setTaskPosition(xPosition, yPosition);

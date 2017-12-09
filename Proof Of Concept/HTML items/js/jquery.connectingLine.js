@@ -50,7 +50,7 @@
 			}
 		};
 
-		//This Function is used to connect two different div with a dotted line.
+		//This Function is used to connect two different div with a line.
 		this.connect = function(option) {
 			_ctx = _canvas[0].getContext('2d');
 			_ctx2 = _canvas2[0].getContext('2d');
@@ -77,7 +77,7 @@
 
 				if (option.left_node != '' && typeof option.left_node !== 'undefined' && option.right_node != '' && typeof option.right_node !== 'undefined' && $(option.left_node).length > 0 && $(option.right_node).length > 0) {
 
-					//To decide colour of the line
+					//To decide color of the line
 					switch (option.status) {
 						case 'accepted':
 							_color = 'green';
@@ -85,14 +85,6 @@
 
 						case 'rejected':
 							_color = 'red';
-							break;
-
-						case 'modified':
-							_color = '#bfb230';
-							break;
-
-						case 'none':
-							_color = '#272728';
 							break;
 
 						default:
@@ -146,7 +138,7 @@
 						//Draw Line
 						var _gap = option.horizantal_gap || 0;
 
-
+						//Draw Arrow Cap
 						_ctx.moveTo(_left.x, _left.y-50);
 						if (_gap != 0 ) {
 							if (_switch == false)
@@ -184,8 +176,6 @@
 						_ctx2.fillStyle = _ctx.strokeStyle;
 						_ctx2.closePath();
 						_ctx2.fill();
-
-						//_ctx2.restore();
 					});
 
 					//option.resize = option.resize || false;
@@ -210,6 +200,7 @@
 			});
 		};
 
+		//deletes all existing lines
 		this.reset = function(option)
 		{
 			_lines = [];

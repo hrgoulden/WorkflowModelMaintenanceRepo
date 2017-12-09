@@ -14,55 +14,40 @@
 	<script>
 		$(function() 
 		{ 
-			var taskDialog, linkDialog, form, linkForm, linkStatus='none', icon, selectMode=false, node=0, taskID=0, mySVG = $('body').connect(), pageWidth = $(document).width(), pageHeight = $(document).height(), fromTaskID, toTaskID; 
+			var taskDialog, linkDialog, form, linkForm, linkStatus='none', icon;
+
+			var selectMode=false, node=0, taskID=0;
+
+			var mySVG = $('body').connect();
+			var pageWidth = $(document).width(), pageHeight = $(document).height(); 
 			
+			//arrays for Task Objects
 			var taskDivList = [];
 			var taskList = [];
 			
+			//arrays for Link Objects
 			var linkList = [];
 			var fromTask, toTask;
 			
+			//Array for Tasks and Links
 			var loadArray = [];
 
-			$("#createTask").click(function()
+
+			$.get('taskArray.txt', function(txtFile)
 			{
-				if (selectMode == true)
+				var types = txtFile.split("\n");
+				taskSelect = document.getElementById('taskType');
+				for (var i=0; i < types.length; i++)
 				{
-					cancelLinkCreation();
+					var value = types[i].replace(/ /g,"_");
+					taskSelect.options[taskSelect.options.length] = new Option(types[i], value);
 				}
-				if (taskID == 0)
-				{
-					$.get('taskArray.txt', function(txtFile)
-					{
-						var types = txtFile.split("\n");
-						taskSelect = document.getElementById('taskType');
-						for (var i=0; i < types.length; i++)
-						{
-							var value = types[i].replace(/ /g,"_");
-							taskSelect.options[taskSelect.options.length] = new Option(types[i], value);
-						}
-											
-					});
-				}
-				$("#form")[0].reset();
-				$("#taskDialog").dialog("open");
+									
 			});
 
-			$("#createLink").click(function()
-			{
-				$("#linkForm")[0].reset();
-				if (selectMode==true)
-				{
-					selectMode=false;
-				}
-				else if (selectMode==false)
-				{
-					selectMode=true;
-				}
-				$(this).toggleClass("pressed");
-				//$(".task").draggable('disable');
-			});
+			//Button functions
 
+			//New Workflow
 			$("#new").click(function()
 			{
 				if (selectMode == true)
@@ -80,26 +65,7 @@
 				}
 			});
 
-			$("#save").click(function()
-			{	
-				if (selectMode == true)
-				{
-					cancelLinkCreation();
-				}
-				for(var i = 0; i < taskDivList.length; i++)
-				{
-					var leftPos = taskDivList[i].style.left;
-					var topPos = taskDivList[i].style.top;
-					
-					taskList[i].setTaskPosition(leftPos, topPos);
-				}
-				var saveArray = [];
-				saveArray.push(taskList);
-				saveArray.push(linkList);
-				var datastring = JSON.stringify(saveArray);
-				saveFile('workflow.json', "data:application/json", new Blob([datastring],{type:""}));
-			});
-
+			//Load Workflow
 			$("#load").click(function()
 			{
 				if (selectMode == true)
@@ -124,6 +90,55 @@
 				fr.readAsText(file);
 			}
 
+			//Save Workflow
+			$("#save").click(function()
+			{	
+				if (selectMode == true)
+				{
+					cancelLinkCreation();
+				}
+				for(var i = 0; i < taskDivList.length; i++)
+				{
+					var leftPos = taskDivList[i].style.left;
+					var topPos = taskDivList[i].style.top;
+					
+					taskList[i].setTaskPosition(leftPos, topPos);
+				}
+				var saveArray = [];
+				saveArray.push(taskList);
+				saveArray.push(linkList);
+				var datastring = JSON.stringify(saveArray);
+				saveFile('workflow.json', "data:application/json", new Blob([datastring],{type:""}));
+			});
+
+			//New Task
+			$("#createTask").click(function()
+			{
+				if (selectMode == true)
+				{
+					cancelLinkCreation();
+				}
+				$("#form")[0].reset();
+				$("#taskDialog").dialog("open");
+			});
+
+			//New Link
+			$("#createLink").click(function()
+			{
+				$("#linkForm")[0].reset();
+				if (selectMode==true)
+				{
+					selectMode=false;
+				}
+				else if (selectMode==false)
+				{
+					selectMode=true;
+				}
+				$(this).toggleClass("pressed");
+			});
+
+
+			//Exit Link Creation Mode and reset relevant variables
 			function cancelLinkCreation()
 			{
 				selectMode = false;
@@ -132,6 +147,7 @@
 				LinkButton.removeClass("pressed");
 			}
 
+			//Reset Workflow Page
 			function clearPage()
 			{
 				taskID = 0;
@@ -149,6 +165,7 @@
 				
 			}
 			
+			//Retrieve Tasks and Links from .json file (or database) and create Task and Link Objects
 			function receivedText(e) 
 			{
 				lines = e.target.result;
@@ -179,10 +196,10 @@
 				loadArray.push(loadedTasks);
 				loadArray.push(loadedLinks);
 				
-				//checks to see if loadArray has been pushed to properly, should say "2"
 				drawLoad(); 
 			}
 
+			//Turn Task and Link objects into visible html code
 			function drawLoad()
 			{
 				for (var i = 0; i<loadArray.length; i++)
@@ -201,7 +218,9 @@
 				}
 			}
 			
-			function saveFile (name, type, data) {
+			//Save workflow to .json file (or database)
+			function saveFile (name, type, data) 
+			{
 				if (data != null && navigator.msSaveBlob)
 				return navigator.msSaveBlob(new Blob([data], { type: type }), name);
 				var a = $("<a style='display: none;'/>");
@@ -216,14 +235,14 @@
 				}, 500);  
 			}
 			
+			//draggable functions for any statically created tasks (draggable function for dynamically created tasks in CreateTask Functions) 
 			$(".task").draggable(
 			{
 				opacity: 0.35, 
 				scroll: true,
 				drag: function(event, ui)
 				{
-					//mySVG.redrawLines();
-					//update position 
+					mySVG.redrawLines();
 				},
 				stop: function(event, ui)
 				{
@@ -234,8 +253,10 @@
 				}
 			});
 
+			//Behavior when clicking on Task Objects
 			$(document).on('click', '.task', function()
 			{
+				//If New Link Button is pressed, start creating task
 				if (selectMode==true)
 				{
 					if (node==0)
@@ -262,41 +283,26 @@
 						cancelLinkCreation();
 					}
 				}
+				//if not, open up edit task dialog
 				else
 				{
 					alert("edit task");
 				}
 			});
 
+			//Edit task appearance on hover (mouseover)
 			$(document).on("mouseenter", 'img', function()
 			{
 				$(this).css("opacity", "0.8");
 			});
 
+			//Revert task appearance on hover (mouseleave)
 			$(document).on("mouseleave", 'img', function()
 			{
 				$(this).css("opacity", "1.0");
 			});
 
-			function addLink()
-			{
-				linkStatus = $("#linkType").val();
-				linkDialog.dialog("close");
-				mySVG.drawLine(
-				{
-					left_node:'#' + fromTask.id,
-					right_node:'#' + toTask.id,
-					style: 'solid',
-					status: linkStatus,
-					horizantal_gap:13,
-					error:true,
-					width:3
-				});
-				var linkNew = new Link(fromTask.id, toTask.id, linkStatus);
-				linkList.push(linkNew);
-				cancelLinkCreation();
-			}
-
+			//Create Task Dialog Behavior
 			taskDialog = $("#taskDialog").dialog(
 			{
 				dialogClass: "no-close",
@@ -329,24 +335,65 @@
 				}
 			});
 
-			function createLinkFromLoad(linkObject)
+			//Allows for Enter Key to trigger Create Task button
+			$("#taskDialog").keydown(function(event)
 			{
-				var leftNode = linkObject.getFromTask();
-				var rightNode = linkObject.getToTask();
-				var linkStatus = linkObject.getLinkWhen();
-				mySVG.drawLine(
+				//enter key code is 13
+				if(event.which == 13)
 				{
-					left_node: '#' + leftNode,
-					right_node:'#' + rightNode,
-					style: 'solid',
-					status: linkStatus,
-					horizantal_gap:13,
-					error:true,
-					width:3
-				});
-				linkList.push(linkObject);
+					$(this).parent().find("button:eq(2)").click();
+					return false;
+				}
+
+			});
+
+			//Create a task object from Dialog Box Creation
+			function createTaskFromForm()
+			{
+				var taskDiv = document.createElement('div');
+
+				taskDiv.id = taskID;
+				taskDiv.className = 'task';
+				var leftOffset = pageWidth / 2;
+				var topOffset = pageHeight / 2;
+				taskDiv.style  = "left: " + leftOffset + "px; top: " + topOffset + "px; position: absolute;" ;
+
+				var img = $('<img src="res/Icon.png"/>');
+				var taskName = $("#name").val();
+				var taskType = $("#taskType").val();
+				var leftPos = taskDiv.style.left;
+				var topPos = taskDiv.style.top;
+				var icon = taskType + ".png";
+				img.attr("src", "res/" + icon);
+				document.getElementsByTagName('body')[0].appendChild(taskDiv);
+				$('#'+taskID).append(img);
+				$('#'+taskID).append(taskName);
+				$(".task").draggable(
+					{
+						obstacle: ".task",
+						opacity: 0.35, 
+						scroll: true,
+						drag: function(event, ui)
+						{
+							mySVG.redrawLines();
+							//update position
+						},
+						stop: function(event, ui)
+						{
+							$(event.toElement).one('click', function(e)
+							{
+								e.stopImmediatePropagation();
+							});
+						}
+					});
+				taskDivList.push(taskDiv);
+				//new Task 
+				var tasknew = new Task(taskID, taskName, taskType, leftPos, topPos);
+				taskID++;
+				taskList.push(tasknew);
 			}
 
+			//Create Task Object from a .json file (or database)
 			function createTaskFromLoad(taskObject)
 			{
 				var taskDiv = document.createElement('div');
@@ -390,70 +437,13 @@
 				taskID++;
 			}
 
-
-			function createTaskFromForm()
+			//Autopopulates Name field in Create Task Dialog from drop down task type selection
+			$("#taskType").on( "selectmenuchange", function( event, ui ) 
 			{
-				var taskDiv = document.createElement('div');
-
-				taskDiv.id = taskID;
-				taskDiv.className = 'task';
-				var leftOffset = pageWidth / 2;
-				var topOffset = pageHeight / 2;
-				taskDiv.style  = "left: " + leftOffset + "px; top: " + topOffset + "px; position: absolute;" ;
-
-				var img = $('<img src="res/Icon.png"/>');
-				var taskName = $("#name").val();
-				var taskType = $("#taskType").val();
-				var leftPos = taskDiv.style.left;
-				var topPos = taskDiv.style.top;
-				var icon = taskType + ".png";
-				img.attr("src", "res/" + icon);
-				document.getElementsByTagName('body')[0].appendChild(taskDiv);
-				$('#'+taskID).append(img);
-				$('#'+taskID).append(taskName);
-				$(".task").draggable(
-					{
-						obstacle: ".task",
-						opacity: 0.35, 
-						scroll: true,
-						drag: function(event, ui)
-						{
-							mySVG.redrawLines();
-							//update position
-						},
-						stop: function(event, ui)
-						{
-							$(event.toElement).one('click', function(e)
-							{
-								e.stopImmediatePropagation();
-							});
-						}
-					});
-				taskDivList.push(taskDiv);
-				//new Task 
-				var tasknew = new Task(taskID, taskName, taskType, leftPos, topPos);
-				/*
-				var a = tasknew.getWFTaskSeq();
-				var b = tasknew.getTaskName();
-				var c = tasknew.getEntityTypeCode();
-				var d = tasknew.getTaskPositionX();
-				var e = tasknew.getTaskPositionY();
-				//alert(a + " " + b + " " +  c + " " +  d + " " +  e);
-				*/
-				taskID++;
-				taskList.push(tasknew);
-			}
-
-			$("#taskDialog").keydown(function(event)
-			{
-				if(event.which == 13)
-				{
-					$(this).parent().find("button:eq(2)").click();
-					return false;
-				}
-
+				document.getElementById("name").value = taskType.options[taskType.selectedIndex].text
 			});
 
+			//Create Link Dialog Behavior
 			linkDialog = $("#linkDialog").dialog(
 			{
 				dialogClass: "no-close",
@@ -483,8 +473,10 @@
 				}
 			});
 
+			//Enter Key triggers Create Link Button
 			$("#linkDialog").keydown(function(event)
 			{
+				//enter key code is 13
 				if(event.which == 13)
 				{
 					$(this).parent().find("button:eq(2)").click();
@@ -493,30 +485,51 @@
 
 			});
 
-			$("#taskDialog").on("change", "#taskType", function()
+			//Create Link Object
+			function addLink()
 			{
-				alert("test");
-			});
+				linkStatus = $("#linkType").val();
+				linkDialog.dialog("close");
+				mySVG.drawLine(
+				{
+					left_node:'#' + fromTask.id,
+					right_node:'#' + toTask.id,
+					style: 'solid',
+					status: linkStatus,
+					horizantal_gap:13,
+					error:true,
+					width:3
+				});
+				var linkNew = new Link(fromTask.id, toTask.id, linkStatus);
+				linkList.push(linkNew);
+				cancelLinkCreation();
+			}
 
+			//Create Link Object from a .json file (or database)
+			function createLinkFromLoad(linkObject)
+			{
+				var leftNode = linkObject.getFromTask();
+				var rightNode = linkObject.getToTask();
+				var linkStatus = linkObject.getLinkWhen();
+				mySVG.drawLine(
+				{
+					left_node: '#' + leftNode,
+					right_node:'#' + rightNode,
+					style: 'solid',
+					status: linkStatus,
+					horizantal_gap:13,
+					error:true,
+					width:3
+				});
+				linkList.push(linkObject);
+			}
+
+			//links JQuery UI for Dialog
 			$("#taskType").selectmenu();
-			
-			$("#taskType").on( "selectmenuchange", function( event, ui ) 
-			{
-				document.getElementById("name").value = taskType.options[taskType.selectedIndex].text
-			});
-			
 			$("#linkType").selectmenu();
-
-			mySVG.drawLine(
-			{
-				left_node:'#0-a',
-				right_node:'#0-b',
-				style: 'solid',
-				status:'rejected',
-				horizantal_gap:0,
-				error:true,
-				width:3
-			});
+			
+			//default DrawLine task
+			mySVG.drawLine({});
 		});
 	</script>
 </head>
@@ -534,30 +547,12 @@
 		<input type="file" id="filePicker" style="display:none" accept=".json">
 	</div>
 	<div id = "WorkFlowArea">
-	<!--<div class=" task node1" position="absolute">
-		<img position="absolute" src="res/Icon.png"/>
-	<div class="task node2 center" position="absolute">
-		<img position="absolute" src="res/Icon.png"/>
-	</div>-->
 		<div id="taskDialog" title="New Task">
 			<form id="form" autocomplete="off">
 				<fieldset>
 					<label for="taskType">Task Type</label>
 					<select name="taskType" id = "taskType" class="ui-corner-all">
 						<option disabled selected value="Icon">Task Type</option>
-						<!--<option value="PPO_Selection">PPO Selection</option>
-						<option value="Hospital_Selection">Hospital Selection</option>
-						<option value="Medical_Bill_Review_Engine">Medical Bill Review Engine</option>
-						<option value="UR_Decision_Manager">UR Decision Manager</option>
-						<option value="Repricing_Bridges">Repricing Bridges</option>
-						<option value="Standard_State_Validations">Standard State Validations</option>
-						<option value="EOR_Generation">EOR Generation</option>
-						<option value="Posting">Posting</option>
-						<option value="Invoice_Generation">Invoice Generation</option>
-						<option value="Controlled_Export">Controlled Export</option>
-						<option value="Decision_Process">Decision Process</option>
-						<option value="Repair_Queue">Repair Queue</option>
-						<option value="Wait_Queue">Wait Queue</option>-->
 					</select>
 					<label for="name">Name</label>
 					<input type="text" name="name" id="name" value="Name" class="text ui-widget-content ui-corner-all">
